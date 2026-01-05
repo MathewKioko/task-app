@@ -254,3 +254,10 @@ export async function createList(listData: Omit<List, 'id' | 'createdAt'>): Prom
 // Initialize with sample data on load
 initializeLocalStorage();
 
+export async function toggleTask(id: string): Promise<Task> {
+  const tasks = await getTasks();
+  const task = tasks.find(t => t.id === id);
+  if (!task) throw new Error("Task not found");
+
+  return updateTask(id, { completed: !task.completed });
+}

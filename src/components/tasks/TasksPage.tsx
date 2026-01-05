@@ -1,59 +1,48 @@
-import { type HTMLAttributes, useState, useEffect, useCallback, useMemo } from "react";
+import { type HTMLAttributes, useState, useCallback, useMemo, useEffect } from "react";
 import { clsx } from "clsx";
 import { TaskList } from "./TaskList";
 import { TaskModal } from "./TaskModal";
 import { EmptyState } from "./EmptyState";
-import { LoadingSkeleton } from "./LoadingSkeleton";
-import { ErrorState } from "./ErrorState";
-import { getTasks, getLists, updateTask, deleteTask } from "../../api/tasks";
+import { useTasks, useLists, useTaskActions } from "../../features/tasks/selectors";
 import type { Task, List } from "../../types";
 
 export interface TasksPageProps extends HTMLAttributes<HTMLDivElement> {
   onEditTask?: (taskId: string) => void;
   onAddTask?: () => void;
+  searchQuery?: string;
+  autoOpenModal?: boolean;
 }
 
 export const TasksPage = ({
   className,
   onEditTask,
   onAddTask,
+  searchQuery,
+  autoOpenModal,
   ...props
 }: TasksPageProps) => {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [lists, setLists] = useState<List[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Use Zustand store
+  const tasks = useTasks();
+  const lists = useLists();
+  const { updateTask, deleteTask } = useTaskActions();
 
+  // State for UI
   const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
   const [listId, setListId] = useState<string | undefined>(undefined);
   const [sortBy, setSortBy] = useState<"dueDate" | "priority" | "none">("none");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [localSearchQuery, setLocalSearchQuery] = useState("");
+  const effectiveSearchQuery = searchQuery || localSearchQuery;
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | undefined>(undefined);
 
-  // Fetch data
-  const fetchData = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const [tasksData, listsData] = await Promise.all([
-        getTasks(),
-        getLists()
-      ]);
-      setTasks(tasksData);
-      setLists(listsData);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load data");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
+  // Auto-open modal when component mounts with autoOpenModal prop
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (autoOpenModal && !isModalOpen) {
+      handleOpenModal();
+    }
+  }, [autoOpenModal, isModalOpen]);
 
   // Modal handlers
   const handleOpenModal = useCallback((taskId?: string) => {
@@ -67,38 +56,29 @@ export const TasksPage = ({
   }, []);
 
   const handleTaskSaved = useCallback(() => {
-    // Refresh tasks after modal closes (modal handles CRUD)
-    fetchData();
+    // Tasks are automatically updated via Zustand store
     handleCloseModal();
-  }, [fetchData, handleCloseModal]);
+  }, [handleCloseModal]);
 
   // Task action handlers
   const handleToggleTask = useCallback(async (id: string) => {
     try {
       const task = tasks.find(t => t.id === id);
       if (!task) return;
-      
-      const updatedTask = await updateTask(id, { completed: !task.completed });
-      setTasks(prev => prev.map(t => t.id === id ? updatedTask : t));
+      await updateTask(id, { completed: !task.completed });
     } catch (error) {
       console.error("Failed to toggle task:", error);
-      setError("Failed to update task");
     }
-  }, [tasks]);
+  }, [tasks, updateTask]);
 
   const handleDeleteTask = useCallback(async (id: string) => {
     try {
       await deleteTask(id);
-      setTasks(prev => prev.filter(t => t.id !== id));
     } catch (error) {
       console.error("Failed to delete task:", error);
-      setError("Failed to delete task");
     }
-  }, []);
+  }, [deleteTask]);
 
-  const handleRetry = useCallback(async () => {
-    await fetchData();
-  }, [fetchData]);
 
   // Apply filters and sorting to tasks
   const filteredAndSortedTasks = useMemo(() => {
@@ -122,8 +102,8 @@ export const TasksPage = ({
     }
 
     // Search by title
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+    if (effectiveSearchQuery) {
+      const query = effectiveSearchQuery.toLowerCase();
       filteredTasks = filteredTasks.filter((task) =>
         task.title.toLowerCase().includes(query)
       );
@@ -151,23 +131,8 @@ export const TasksPage = ({
     }
 
     return sortedTasks;
-  }, [tasks, filter, listId, sortBy, searchQuery]);
+  }, [tasks, filter, listId, sortBy, effectiveSearchQuery]);
 
-  if (isLoading) {
-    return <LoadingSkeleton className={className} {...props} />;
-  }
-
-  if (error) {
-    return (
-      <ErrorState
-        className={className}
-        title="Failed to load tasks"
-        message={error}
-        onRetry={handleRetry}
-        {...props}
-      />
-    );
-  }
 
   const hasNoTasks = filteredAndSortedTasks.length === 0;
 
@@ -183,6 +148,14 @@ export const TasksPage = ({
       {/* Filters Toolbar */}
       <div className="border-b border-neutral-200 bg-white/80 backdrop-blur-sm px-6 py-4 dark:border-neutral-800 dark:bg-neutral-900/80">
         <div className="flex flex-wrap items-center gap-4">
+          {/* Add Task Button */}
+          <button
+            onClick={() => handleOpenModal()}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+          >
+            Add Task
+          </button>
+          
           {/* Filter Tabs */}
           <div className="flex rounded-lg bg-neutral-100 p-1 shadow-inner dark:bg-neutral-850">
             {(["all", "active", "completed"] as const).map((f) => (
@@ -240,8 +213,8 @@ export const TasksPage = ({
           <input
             type="text"
             placeholder="Search tasks..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={effectiveSearchQuery}
+            onChange={(e) => setLocalSearchQuery(e.target.value)}
             className={clsx(
               "h-9 flex-1 min-w-[200px] max-w-xs rounded-lg border bg-neutral-50 px-3.5 py-1.5 text-sm shadow-xs",
               "dark:bg-neutral-850 dark:text-neutral-50 dark:border-neutral-700",

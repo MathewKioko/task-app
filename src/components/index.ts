@@ -13,6 +13,7 @@ export { Avatar } from "./ui/Avatar";
 export { Tooltip } from "./ui/Tooltip";
 export { Modal } from "./ui/Modal";
 export { Dropdown } from "./ui/Dropdown";
+export { ConfirmationDialog } from "./ui/ConfirmationDialog";
 
 // Task Components
 export { TasksPage } from "./tasks/TasksPage";
@@ -22,6 +23,18 @@ export { TaskModal } from "./tasks/TaskModal";
 export { EmptyState } from "./tasks/EmptyState";
 export { LoadingSkeleton } from "./tasks/LoadingSkeleton";
 export { ErrorState } from "./tasks/ErrorState";
+
+// Lists Components
+export { ListsPage } from "./lists/ListsPage";
+
+// Calendar Components
+export { CalendarPage } from "./calendar/CalendarPage";
+
+// Dashboard Components
+export { DashboardPage } from "./dashboard/DashboardPage";
+
+// Settings Components
+export { SettingsPage } from "./settings/SettingsPage";
 
 // Types
 export type { AppShellProps } from "./layout/AppShell";

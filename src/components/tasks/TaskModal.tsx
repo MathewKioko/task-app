@@ -4,8 +4,7 @@ import { Input } from "../ui/Input";
 import { Textarea } from "../ui/Textarea";
 import { Dropdown } from "../ui/Dropdown";
 import { Button } from "../ui/Button";
-import { createTask, updateTask, getLists } from "../../api/tasks";
-import type { Task, List } from "../../types";
+import { useTaskActions, useLists } from "../../features/tasks/selectors";
 
 export interface TaskModalProps {
   isOpen: boolean;
@@ -31,19 +30,15 @@ export const TaskModal = ({
 }: TaskModalProps) => {
   const [selectedPriority, setSelectedPriority] = useState<"low" | "medium" | "high">("medium");
   const [selectedListId, setSelectedListId] = useState("");
-  const [lists, setLists] = useState<List[]>([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     dueDate: "",
   });
 
-  // Load lists
-  useEffect(() => {
-    if (isOpen) {
-      getLists().then(setLists).catch(console.error);
-    }
-  }, [isOpen]);
+  // Use Zustand store
+  const lists = useLists();
+  const { addTask, updateTask } = useTaskActions();
 
   // Initialize form values when task is provided (edit mode) or reset for create mode
   useEffect(() => {
@@ -97,7 +92,7 @@ export const TaskModal = ({
 
     try {
       if (mode === "create" || !task) {
-        await createTask(taskData);
+        await addTask(taskData);
       } else {
         await updateTask(task.id, taskData);
       }

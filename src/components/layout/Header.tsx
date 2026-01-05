@@ -48,11 +48,6 @@ export const Header = ({
 
       {/* Actions */}
       <div className="flex items-center gap-2">
-        <Button onClick={onAddTask} size="md">
-          <Plus className="h-4 w-4" strokeWidth={2.5} />
-          <span>Add Task</span>
-        </Button>
-
         <button
           onClick={onThemeToggle}
           className="rounded-lg p-2 text-neutral-500 transition-all hover:bg-neutral-100 hover:text-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-300"
