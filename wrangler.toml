@@ -1,0 +1,21 @@
+name = "task-app"
+main = "backend/dist/server.js"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "task-app-production"
+compatibility_date = "2024-01-01"
+
+[triggers]
+crons = []
+
+[vars]
+NODE_VERSION = "20"
+
+[[migrations]]
+tag = "init"
+new_classes = ["TaskApp"]
+
+[[migrations]]
+tag = "add-tasks"
+new_classes = ["Task"]
