@@ -1,7 +1,6 @@
 import { type HTMLAttributes } from "react";
 import { clsx } from "clsx";
-import { Search, Plus, Sun, Moon } from "lucide-react";
-import { Button } from "../ui/Button";
+import { Search, Sun, Moon } from "lucide-react";
 import { Input } from "../ui/Input";
 import { Avatar } from "../ui/Avatar";
 import type { User, ThemeMode } from "../../types";

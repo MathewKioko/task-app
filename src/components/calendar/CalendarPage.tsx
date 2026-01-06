@@ -99,7 +99,7 @@ export const CalendarPage = ({
   };
 
   // Handle task click
-  const handleTaskClick = (taskId: string) => {
+  const handleTaskClick = () => {
     setIsModalOpen(true);
   };
 
@@ -220,7 +220,7 @@ export const CalendarPage = ({
                         )}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleTaskClick(task.id);
+                          handleTaskClick();
                         }}
                       >
                         <div className="flex items-center gap-2">
@@ -298,7 +298,7 @@ export const CalendarPage = ({
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleTaskClick(task.id)}
+                            onClick={() => handleTaskClick()}
                           >
                             View
                           </Button>

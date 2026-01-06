@@ -3,7 +3,6 @@ import { clsx } from "clsx";
 import { Button } from "../ui/Button";
 import { format, isToday, parseISO } from "date-fns";
 import { useTasks, useLists } from "../../features/tasks/selectors";
-import type { Task, List } from "../../types";
 
 export interface DashboardPageProps extends HTMLAttributes<HTMLDivElement> {
   onAddTask?: () => void;

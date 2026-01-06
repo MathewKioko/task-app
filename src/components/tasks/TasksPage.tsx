@@ -4,7 +4,6 @@ import { TaskList } from "./TaskList";
 import { TaskModal } from "./TaskModal";
 import { EmptyState } from "./EmptyState";
 import { useTasks, useLists, useTaskActions } from "../../features/tasks/selectors";
-import type { Task, List } from "../../types";
 
 export interface TasksPageProps extends HTMLAttributes<HTMLDivElement> {
   onEditTask?: (taskId: string) => void;

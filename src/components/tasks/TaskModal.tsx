@@ -5,6 +5,7 @@ import { Textarea } from "../ui/Textarea";
 import { Dropdown } from "../ui/Dropdown";
 import { Button } from "../ui/Button";
 import { useTaskActions, useLists } from "../../features/tasks/selectors";
+import type { Task } from "../../types";
 
 export interface TaskModalProps {
   isOpen: boolean;
