@@ -1,0 +1,9 @@
+import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
+import { clsx } from "clsx";
+import { TaskItem } from "./TaskItem";
+export const TaskList = ({ tasks, onEditTask, onToggleTask, onDeleteTask, }) => {
+    // Tasks are already filtered and sorted by TasksPage
+    const activeTasks = tasks.filter((task) => !task.completed);
+    const completedTasks = tasks.filter((task) => task.completed);
+    return (_jsxs("div", { className: clsx("divide-y divide-neutral-200 dark:divide-neutral-800"), children: [activeTasks.length > 0 && (_jsxs("div", { children: [_jsx("div", { className: "px-6 py-3 bg-neutral-50 dark:bg-neutral-800/50 border-b border-neutral-200 dark:border-neutral-800", children: _jsxs("h2", { className: "text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400", children: ["Active (", activeTasks.length, ")"] }) }), _jsx("div", { className: "divide-y divide-neutral-200 dark:divide-neutral-800", children: activeTasks.map((task) => (_jsx(TaskItem, { task: task, onEdit: () => onEditTask?.(task.id), onToggle: onToggleTask || (() => { }), onDelete: onDeleteTask || (() => { }) }, task.id))) })] })), completedTasks.length > 0 && (_jsxs("div", { children: [_jsx("div", { className: "px-6 py-3 bg-neutral-50 dark:bg-neutral-800/50 border-b border-neutral-200 dark:border-neutral-800", children: _jsxs("h2", { className: "text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400", children: ["Completed (", completedTasks.length, ")"] }) }), _jsx("div", { className: "divide-y divide-neutral-200 dark:divide-neutral-800", children: completedTasks.map((task) => (_jsx(TaskItem, { task: task, onEdit: () => onEditTask?.(task.id), onToggle: onToggleTask || (() => { }), onDelete: onDeleteTask || (() => { }) }, task.id))) })] }))] }));
+};
