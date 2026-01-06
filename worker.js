@@ -1,3 +1,5 @@
+import { getAssetFromKV } from '@cloudflare/kv-asset-handler';
+
 export default {
   async fetch(request, env) {
     // Handle API routes
@@ -10,31 +12,32 @@ export default {
       });
     }
 
-    // Serve static files from the dist directory
-    const url = new URL(request.url);
-    let pathname = url.pathname;
-
-    // Serve index.html for all non-file routes (SPA routing)
-    if (!pathname.includes('.') && pathname !== '/') {
-      pathname = '/index.html';
-    }
-
     try {
-      const filePath = pathname === '/' ? '/index.html' : pathname;
-      const file = await env.ASSETS.fetch(new Request(new URL(filePath, request.url)));
-      
-      // Set appropriate headers for SPA
-      if (pathname === '/' || !pathname.includes('.')) {
-        const response = new Response(file.body, file);
-        response.headers.set('Cache-Control', 'no-cache');
-        return response;
-      }
-      
-      return file;
-    } catch (error) {
+      return await getAssetFromKV({
+        request,
+        waitUntil(promise) {
+          return promise
+        },
+      }, {
+        ASSET_NAMESPACE: env.__STATIC_CONTENT,
+        ASSET_MANIFEST: JSON.parse(env.__STATIC_CONTENT_MANIFEST),
+      });
+    } catch (e) {
       // Fallback to index.html for SPA routing
-      const index = await env.ASSETS.fetch(new Request(new URL('/index.html', request.url)));
-      return new Response(index.body, index);
+      const notFoundResponse = await getAssetFromKV({
+        request: new Request(new URL('/index.html', request.url)),
+        waitUntil(promise) {
+          return promise
+        },
+      }, {
+        ASSET_NAMESPACE: env.__STATIC_CONTENT,
+        ASSET_MANIFEST: JSON.parse(env.__STATIC_CONTENT_MANIFEST),
+      });
+      
+      return new Response(notFoundResponse.body, {
+        ...notFoundResponse,
+        status: 200,
+      });
     }
-  }
+  },
 };

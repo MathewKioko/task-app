@@ -5,7 +5,14 @@ compatibility_flags = ["nodejs_compat"]
 
 [site]
 bucket = "./dist"
-entry-point = "workers-site"
+
+[triggers]
+crons = []
+
+[vars]
+NODE_VERSION = "20"
+DATABASE_URL = ""
+PORT = "3000"
 
 [env.production]
 name = "task-app-production"
@@ -14,7 +21,6 @@ compatibility_flags = ["nodejs_compat"]
 
 [site]
 bucket = "./dist"
-entry-point = "workers-site"
 
 [triggers]
 crons = []
