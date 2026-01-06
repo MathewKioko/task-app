@@ -11,43 +11,34 @@ You already have a PostgreSQL database set up with Neon.tech:
 DATABASE_URL="postgresql://neondb_owner:npg_7CQkMpS6qGYF@ep-noisy-butterfly-aduts8yj-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 ```
 
-### Step 1: Deploy Backend to Railway
+### Step 1: Deploy Backend to Render
 
-1. Go to [Railway.app](https://railway.app) and sign up
+1. Go to [Render.com](https://render.com) and sign up
 2. Connect your GitHub repository
-3. Import the `backend` directory as a new service
-4. Railway will automatically use the `Dockerfile` and `railway.json` for deployment
-5. Set environment variables in Railway:
+3. Create a new **Web Service**
+4. Select the `backend` directory from your repository
+5. Set the following configuration:
+   - **Build Command**: `npm run build`
+   - **Start Command**: `node dist/server.js`
+   - **Region**: Choose closest to your users
+6. Add environment variables:
    - `DATABASE_URL`: `postgresql://neondb_owner:npg_7CQkMpS6qGYF@ep-noisy-butterfly-aduts8yj-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require`
-   - `PORT`: `3000` (default)
-6. Deploy the backend service
+   - `PORT`: `3000`
+7. Deploy the service
 
 ### Step 2: Configure Cloudflare Worker
 
 1. Go to your Cloudflare Workers dashboard
 2. Add a new environment variable:
    - **Name**: `BACKEND_URL`
-   - **Value**: Your Railway backend URL (e.g., `https://your-app.up.railway.app`)
+   - **Value**: Your Render backend URL (e.g., `https://task-app-backend.onrender.com`)
 3. Redeploy your Worker
 
 ### Step 3: Test the Application
 
 Your app should now be fully functional:
 - Frontend: https://task-app.mathewkioko2006.workers.dev/
-- Backend API: Your Railway URL
-
-### Alternative: Use Render for Backend
-
-If you prefer Render:
-1. Go to [Render.com](https://render.com)
-2. Create a new Web Service
-3. Connect your GitHub repository
-4. Select the `backend` directory
-5. Set build command: `npm run build`
-6. Set start command: `node dist/server.js`
-7. Add environment variables:
-   - `DATABASE_URL`: Your Neon.tech connection string
-   - `PORT`: `3000`
+- Backend API: Your Render URL (e.g., `https://task-app-backend.onrender.com`)
 
 ### Database Setup
 
@@ -59,17 +50,24 @@ If you prefer Render:
 ### Environment Variables
 
 **Frontend (Cloudflare Worker):**
-- `BACKEND_URL`: Your backend service URL
+- `BACKEND_URL`: Your Render backend URL
 
-**Backend (Railway/Render):**
+**Backend (Render):**
 - `DATABASE_URL`: `postgresql://neondb_owner:npg_7CQkMpS6qGYF@ep-noisy-butterfly-aduts8yj-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require`
 - `PORT`: `3000` (default)
+
+### Render Configuration Files
+
+✅ **Already Included!** The repository contains:
+- [`backend/Dockerfile`](./backend/Dockerfile:1) - Container setup
+- [`backend/render.yaml`](./backend/render.yaml:1) - Render deployment configuration
 
 ### Troubleshooting
 
 1. **CORS Issues**: Ensure your backend allows requests from your Cloudflare domain
 2. **Database Connection**: Your Neon.tech connection is already configured
 3. **API Not Working**: Check that BACKEND_URL is set in Cloudflare Worker environment variables
+4. **Render Build Failures**: Make sure you're selecting the `backend` directory, not the root
 
 ### Full Functionality
 
