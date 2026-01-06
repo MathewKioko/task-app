@@ -37,3 +37,4 @@ tsconfig.tsbuildinfo
 # npm
 package-lock.json
 .npmrc
+tsconfig.tsbuildinfo
