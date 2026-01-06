@@ -61,7 +61,8 @@ app.delete("/tasks/:id", async (req, res) => {
   res.status(204).send();
 });
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
+
 app.listen(PORT, () => {
-  console.log(`✅ Backend running on http://localhost:${PORT}`);
+  console.log(`✅ Backend running on port ${PORT}`);
 });
