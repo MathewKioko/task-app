@@ -1,68 +1,46 @@
 import express from "express";
-import cors from "cors";
-import { PrismaClient } from "@prisma/client";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// If you already import routes, keep them
+// import taskRoutes from "./routes/tasks";
 
 const app = express();
-const prisma = new PrismaClient();
+const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+// Required for ES modules + TS
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Middleware
 app.use(express.json());
 
+// ================= API ROUTES =================
+// app.use("/api/tasks", taskRoutes);
+
 // Health check
-app.get("/", (_req, res) => {
-  res.send("Backend is running 🚀");
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
 });
 
-// Get all tasks
-app.get("/tasks", async (_req, res) => {
-  const tasks = await prisma.task.findMany({
-    orderBy: { createdAt: "desc" },
-  });
-  res.json(tasks);
+// ================= FRONTEND =================
+const distPath = path.join(__dirname, "../../dist");
+
+// Serve static files
+app.use(express.static(distPath));
+
+// SPA fallback (React Router support)
+app.get("*", (_req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
 });
 
-// Create task
-app.post("/tasks", async (req, res) => {
-  const { title } = req.body;
-
-  if (!title) {
-    return res.status(400).json({ error: "Title is required" });
-  }
-
-  const task = await prisma.task.create({
-    data: { title },
-  });
-
-  res.status(201).json(task);
-});
-
-// Toggle task
-app.patch("/tasks/:id", async (req, res) => {
-  const id = Number(req.params.id);
-
-  const task = await prisma.task.findUnique({ where: { id } });
-  if (!task) {
-    return res.status(404).json({ error: "Task not found" });
-  }
-
-  const updated = await prisma.task.update({
-    where: { id },
-    data: { completed: !task.completed },
-  });
-
-  res.json(updated);
-});
-
-// Delete task
-app.delete("/tasks/:id", async (req, res) => {
-  const id = Number(req.params.id);
-
-  await prisma.task.delete({ where: { id } });
-  res.status(204).send();
-});
-
-const PORT = process.env.PORT || 4000;
-
+// Start server
 app.listen(PORT, () => {
-  console.log(`✅ Backend running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient({
+  datasourceUrl: process.env.DATABASE_URL,
 });

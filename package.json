@@ -3,14 +3,11 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "build:backend": "cd backend && tsc",
-    "start": "node backend/dist/server.js",
-    "prisma:migrate": "cd backend && npx prisma migrate deploy"
-  },
+"scripts": {
+  "build": "tsc -b && vite build && cd backend && npm run build",
+  "start": "node backend/dist/server.js",
+  "prisma:migrate": "cd backend && npx prisma migrate deploy"
+},
   "engines": {
     "node": "20.x"
   },
