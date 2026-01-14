@@ -4,12 +4,12 @@ A production-ready, SaaS-grade task management UI system built with React, TypeS
 
 ## Features
 
-- ✨ **Clean SaaS Aesthetic** - Professional, minimal design similar to Linear/Notion/Todoist
-- 🌓 **Dark & Light Mode** - Full dark mode support using Tailwind's class strategy
-- 📱 **Fully Responsive** - Mobile-first design that works on all screen sizes
-- ♿ **Accessibility First** - Semantic HTML, ARIA labels, keyboard navigation
-- 🎨 **Consistent Design System** - Custom color palette, typography scale, spacing
-- 🧩 **Modular Components** - Reusable, well-organized component architecture
+-  **Clean SaaS Aesthetic** - Professional, minimal design similar to Linear/Notion/Todoist
+-  **Dark & Light Mode** - Full dark mode support using Tailwind's class strategy
+-  **Fully Responsive** - Mobile-first design that works on all screen sizes
+-  **Accessibility First** - Semantic HTML, ARIA labels, keyboard navigation
+-  **Consistent Design System** - Custom color palette, typography scale, spacing
+-  **Modular Components** - Reusable, well-organized component architecture
 
 ## Component Library
 
